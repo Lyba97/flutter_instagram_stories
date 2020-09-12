@@ -64,7 +64,7 @@ class FlutterInstagramStories extends StatefulWidget {
       this.lastIconHighlightRadius = const Radius.circular(15.0),
       this.iconWidth,
       this.iconHeight,
-      this.showTitleOnIcon = true,
+      this.showTitleOnIcon = false,
       this.iconTextStyle,
       this.iconBoxDecoration,
       this.iconImageBorderRadius,
@@ -117,7 +117,7 @@ class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
   Widget build(BuildContext context) {
     String res = ModalRoute.of(context).settings.arguments;
     return Container(
-      color: Colors.white,
+      color: Colors.pink,
       height: widget.iconHeight + 24,
       child: StreamBuilder(
         stream: _firestore

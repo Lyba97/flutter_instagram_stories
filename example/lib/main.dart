@@ -50,14 +50,14 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           FlutterInstagramStories(
             collectionDbName: collectionDbName,
-            showTitleOnIcon: true,
+            showTitleOnIcon: false,
             backFromStories: () {
               _backFromStoriesAlert();
             },
-            iconTextStyle: TextStyle(
-              fontSize: 14.0,
-              color: Colors.white,
-            ),
+//            iconTextStyle: TextStyle(
+//              fontSize: 10.0,
+//              color: Colors.white,
+//            ),
             iconImageBorderRadius: BorderRadius.circular(15.0),
             iconBoxDecoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(15.0)),
