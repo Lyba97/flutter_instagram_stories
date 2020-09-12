@@ -32,11 +32,6 @@ class FlutterInstagramStories extends StatefulWidget {
   final BorderRadius iconImageBorderRadius;
   final EdgeInsets textInIconPadding;
 
-  /// caption on image
-  final TextStyle captionTextStyle;
-  final EdgeInsets captionMargin;
-  final EdgeInsets captionPadding;
-
   /// how long story lasts
   final int imageStoryDuration;
 
@@ -59,38 +54,27 @@ class FlutterInstagramStories extends StatefulWidget {
 
   FlutterInstagramStories(
       {@required this.collectionDbName,
-      this.lastIconHighlight = false,
-      this.lastIconHighlightColor = Colors.deepOrange,
-      this.lastIconHighlightRadius = const Radius.circular(15.0),
-      this.iconWidth,
-      this.iconHeight,
-      this.showTitleOnIcon = false,
-      this.iconTextStyle,
-      this.iconBoxDecoration,
-      this.iconImageBorderRadius,
-      this.textInIconPadding =
-          const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
-      this.captionTextStyle = const TextStyle(
-        fontSize: 15,
-        color: Colors.white,
-      ),
-      this.captionMargin = const EdgeInsets.only(
-        bottom: 24,
-      ),
-      this.captionPadding = const EdgeInsets.symmetric(
-        horizontal: 24,
-        vertical: 8,
-      ),
-      this.imageStoryDuration = 5,
-      this.backgroundColorBetweenStories = Colors.black,
-      this.closeButtonIcon,
-      this.closeButtonBackgroundColor,
-      this.sortingOrderDesc = true,
-      this.backFromStories,
-      this.progressPosition = ProgressPosition.top,
-      this.repeat = true,
-      this.inline = false,
-      this.languageCode = 'en'});
+        this.lastIconHighlight = false,
+        this.lastIconHighlightColor = Colors.deepOrange,
+        this.lastIconHighlightRadius = const Radius.circular(15.0),
+        this.iconWidth,
+        this.iconHeight,
+        this.showTitleOnIcon = true,
+        this.iconTextStyle,
+        this.iconBoxDecoration,
+        this.iconImageBorderRadius,
+        this.textInIconPadding =
+        const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0),
+        this.imageStoryDuration,
+        this.backgroundColorBetweenStories = Colors.black,
+        this.closeButtonIcon,
+        this.closeButtonBackgroundColor,
+        this.sortingOrderDesc = true,
+        this.backFromStories,
+        this.progressPosition = ProgressPosition.top,
+        this.repeat = false,
+        this.inline = false,
+        this.languageCode = 'en'});
 
   @override
   _FlutterInstagramStoriesState createState() =>
@@ -99,7 +83,7 @@ class FlutterInstagramStories extends StatefulWidget {
 
 class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
   StoriesData _storiesData;
-  final _firestore = FirebaseFirestore.instance;
+  final _firestore = Firestore.instance;
   bool _backStateAdditional = false;
 
   @override
@@ -116,10 +100,8 @@ class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
   @override
   Widget build(BuildContext context) {
     String res = ModalRoute.of(context).settings.arguments;
-    return Container(
-      color: Colors.pink,
-      height: widget.iconHeight + 24,
-      child: StreamBuilder(
+    return
+      StreamBuilder(
         stream: _firestore
             .collection(widget.collectionDbName)
             .orderBy('date', descending: widget.sortingOrderDesc)
@@ -132,40 +114,37 @@ class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
               itemCount: 3,
               itemBuilder: (BuildContext context, int index) {
                 return Padding(
-                  padding: EdgeInsets.only(left: 15.0, top: 8.0, bottom: 16.0),
-                  child: InkWell(
-                    child: Container(
-                      width: widget.iconWidth,
-                      height: widget.iconHeight,
-                      child: Stack(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: widget.iconImageBorderRadius,
-                            child: StoriesListSkeletonAlone(
-                              width: widget.iconWidth,
-                              height: widget.iconHeight,
+                    padding: EdgeInsets.all(8.0),
+                    child: InkWell(
+                      child: Container(
+                        width: widget.iconWidth,
+                        height: widget.iconHeight,
+                        child: Stack(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: widget.iconImageBorderRadius,
+                              child: StoriesListSkeletonAlone(
+                                width: widget.iconWidth,
+                                height: widget.iconHeight,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
+                    )
                 );
               },
             );
           }
           final stories = snapshot.data.documents;
 
-          print(
-              '++++++++++++++++++++++++++++++++++++++++++++++++++11 ${stories[0].data()}');
-
           final List<Stories> storyWidgets =
-              _storiesData.parseStoriesPreview(stories);
+          _storiesData.parseStoriesPreview(stories);
 
           // the variable below is for passing stories ids to screen Stories
           final List<String> storiesIdsList = _storiesData.storiesIdsList;
 
-          _buildFuture(res);
+          //  _buildFuture(res);
 
           return ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -176,97 +155,91 @@ class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
               story.previewTitle.putIfAbsent(widget.languageCode, () => '');
 
               if (index == 0 && widget.lastIconHighlight) {
-                return Padding(
-                  padding: EdgeInsets.only(left: 15.0, top: 8.0, bottom: 16.0),
-                  child: InkWell(
-                    child: DottedBorder(
-                      color: widget.lastIconHighlightColor,
-                      dashPattern: [8, 4],
-                      strokeWidth: 2,
-                      borderType: BorderType.RRect,
-                      radius: widget.lastIconHighlightRadius,
-                      child: Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Container(
-                          decoration: widget.iconBoxDecoration,
-                          width: widget.iconWidth,
-                          height: widget.iconHeight,
-                          child: Stack(children: <Widget>[
-                            ClipRRect(
-                              borderRadius: widget.iconImageBorderRadius,
-                              child: CachedNetworkImage(
-                                imageUrl: story.previewImage,
-                                width: widget.iconWidth,
-                                height: widget.iconHeight,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    StoriesListSkeletonAlone(
-                                  width: widget.iconWidth,
-                                  height: widget.iconHeight,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
-                              ),
-                            ),
-                            Container(
+                return InkWell(
+                  child: DottedBorder(
+                    color: widget.lastIconHighlightColor,
+                    dashPattern: [8, 4],
+                    strokeWidth: 2,
+                    borderType: BorderType.Circle,
+                    radius: widget.lastIconHighlightRadius,
+                    child: Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Container(
+                        decoration: widget.iconBoxDecoration,
+                        width: widget.iconWidth,
+                        height: widget.iconHeight,
+                        child: Stack(children: <Widget>[
+                          ClipRRect(
+                            borderRadius: widget.iconImageBorderRadius,
+                            child: CachedNetworkImage(
+                              imageUrl: story.previewImage,
                               width: widget.iconWidth,
                               height: widget.iconHeight,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Padding(
-                                    padding: widget.textInIconPadding,
-                                    child: Text(
-                                      story.previewTitle[widget.languageCode],
-                                      style: widget.iconTextStyle,
-                                      textAlign: TextAlign.left,
-                                    ),
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) =>
+                                  StoriesListSkeletonAlone(
+                                    width: widget.iconWidth,
+                                    height: widget.iconHeight,
                                   ),
-                                ],
-                              ),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
                             ),
-                          ]),
-                        ),
+                          ),
+                          Container(
+                            width: widget.iconWidth,
+                            height: widget.iconHeight,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                Padding(
+                                  padding: widget.textInIconPadding,
+                                  child: Text(
+                                    story.previewTitle[widget.languageCode],
+                                    style: widget.iconTextStyle,
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ]),
                       ),
                     ),
-                    onTap: () async {
-                      _backStateAdditional = true;
-                      Navigator.push(
-                        context,
-                        NoAnimationMaterialPageRoute(
-                          builder: (context) => GroupedStoriesView(
-                            collectionDbName: widget.collectionDbName,
-                            languageCode: widget.languageCode,
-                            imageStoryDuration: widget.imageStoryDuration,
-                            progressPosition: widget.progressPosition,
-                            repeat: widget.repeat,
-                            inline: widget.inline,
-                            backgroundColorBetweenStories:
-                                widget.backgroundColorBetweenStories,
-                            closeButtonIcon: widget.closeButtonIcon,
-                            closeButtonBackgroundColor:
-                                widget.closeButtonBackgroundColor,
-                            sortingOrderDesc: widget.sortingOrderDesc,
-                            captionTextStyle: widget.captionTextStyle,
-                            captionPadding: widget.captionPadding,
-                            captionMargin: widget.captionMargin,
-                          ),
-                          settings: RouteSettings(
-                            arguments: StoriesListWithPressed(
-                                pressedStoryId: story.storyId,
-                                storiesIdsList: storiesIdsList),
-                          ),
-                        ),
-//                        ModalRoute.withName('/'),
-                      );
-                    },
                   ),
+                  onTap: () async {
+                    _backStateAdditional = true;
+                    Navigator.push(
+                      context,
+                      NoAnimationMaterialPageRoute(
+                        builder: (context) => GroupedStoriesView(
+                          collectionDbName: widget.collectionDbName,
+                          languageCode: widget.languageCode,
+                          imageStoryDuration: widget.imageStoryDuration,
+                          progressPosition: widget.progressPosition,
+                          repeat: widget.repeat,
+                          inline: widget.inline,
+                          backgroundColorBetweenStories:
+                          Colors.blue,
+                          closeButtonIcon: widget.closeButtonIcon,
+                          closeButtonBackgroundColor:
+                          widget.closeButtonBackgroundColor,
+                          sortingOrderDesc: widget.sortingOrderDesc,
+                        ),
+                        settings: RouteSettings(
+                          arguments: StoriesListWithPressed(
+                              pressedStoryId: story.storyId,
+                              storiesIdsList: storiesIdsList),
+                        ),
+                      ),
+//                        ModalRoute.withName('/'),
+                    );
+                  },
                 );
               } else {
                 return Padding(
-                  padding: EdgeInsets.only(left: 15.0, top: 8.0, bottom: 16.0),
+                  padding: EdgeInsets.only(left: 15.0, top: 16.0, bottom: 16.0),
                   child: InkWell(
                     child: Container(
                       decoration: widget.iconBoxDecoration,
@@ -282,9 +255,9 @@ class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
                             fit: BoxFit.cover,
                             placeholder: (context, url) =>
                                 StoriesListSkeletonAlone(
-                              width: widget.iconWidth,
-                              height: widget.iconHeight,
-                            ),
+                                  width: widget.iconWidth,
+                                  height: widget.iconHeight,
+                                ),
                             errorWidget: (context, url, error) =>
                                 Icon(Icons.error),
                           ),
@@ -323,14 +296,11 @@ class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
                             repeat: widget.repeat,
                             inline: widget.inline,
                             backgroundColorBetweenStories:
-                                widget.backgroundColorBetweenStories,
+                            widget.backgroundColorBetweenStories,
                             closeButtonIcon: widget.closeButtonIcon,
                             closeButtonBackgroundColor:
-                                widget.closeButtonBackgroundColor,
+                            widget.closeButtonBackgroundColor,
                             sortingOrderDesc: widget.sortingOrderDesc,
-                            captionTextStyle: widget.captionTextStyle,
-                            captionPadding: widget.captionPadding,
-                            captionMargin: widget.captionMargin,
                           ),
                           settings: RouteSettings(
                             arguments: StoriesListWithPressed(
@@ -347,8 +317,8 @@ class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
             },
           );
         },
-      ),
-    );
+      );
+
   }
 
   _buildFuture(String res) async {
@@ -366,10 +336,10 @@ class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
     bool maintainState = true,
     bool fullscreenDialog = false,
   }) : super(
-            builder: builder,
-            maintainState: maintainState,
-            settings: settings,
-            fullscreenDialog: fullscreenDialog);
+      builder: builder,
+      maintainState: maintainState,
+      settings: settings,
+      fullscreenDialog: fullscreenDialog);
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,

@@ -5,8 +5,8 @@ import 'style.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+ // WidgetsFlutterBinding.ensureInitialized();
+ // await Firebase.initializeApp();
 
   runApp(MyApp());
 }
@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
 
   //TODO: add possibility get data from any API
   CollectionReference dbInstance =
-      FirebaseFirestore.instance.collection(collectionDbName);
+      Firestore.instance.collection(collectionDbName);
 
   @override
   void initState() {
@@ -94,17 +94,17 @@ class _HomeState extends State<Home> {
             lastIconHighlight: true,
             lastIconHighlightColor: Colors.deepOrange,
             lastIconHighlightRadius: const Radius.circular(15.0),
-            captionTextStyle: TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-            ),
-            captionMargin: EdgeInsets.only(
-              bottom: 50,
-            ),
-            captionPadding: EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 8,
-            ),
+//            captionTextStyle: TextStyle(
+//              fontSize: 22,
+//              color: Colors.white,
+//            ),
+//            captionMargin: EdgeInsets.only(
+//              bottom: 50,
+//            ),
+//            captionPadding: EdgeInsets.symmetric(
+//              horizontal: 24,
+//              vertical: 8,
+//            ),
           ),
           Center(
             child: Padding(

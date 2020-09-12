@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'stories.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -9,9 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class StoriesData {
   String languageCode;
 
-  StoriesData({
-    this.languageCode,
-  });
+  StoriesData({this.languageCode});
 
   int _cacheDepth = 4;
   List<String> _storiesIdsList = [];
@@ -26,15 +23,17 @@ class StoriesData {
     for (var story in stories) {
       final Stories storyData = Stories.fromJson({
         'storyId': story.documentID,
-        'date':
-            DateTime.fromMillisecondsSinceEpoch(story.data()['date'].seconds)
-                .toIso8601String(),
-        'file': jsonDecode(jsonEncode(story.data()['file'])),
-        'previewImage': story.data()['previewImage'],
-        'previewTitle': jsonDecode(jsonEncode(story.data()['previewTitle'])),
+        'date': DateTime.fromMillisecondsSinceEpoch(story.data['date'].seconds)
+            .toIso8601String(),
+        'file': jsonDecode(jsonEncode(story.data['file'])),
+        'previewImage': story.data['previewImage'],
+        'previewTitle': jsonDecode(jsonEncode(story.data['previewTitle'])),
+        's_caption' : jsonDecode(jsonEncode(story.data['s_caption'])),
+
       });
       if (storyData.file != null) {
         storyWidgets.add(storyData);
+        //  storyData.s_caption
         _storiesIdsList.add(story.documentID);
 
 //         preliminary caching
@@ -51,19 +50,18 @@ class StoriesData {
   }
 
   void parseStories(
-    Map<String, dynamic> toPass,
-    imageStoryDuration,
-    TextStyle captionTextStyle,
-    EdgeInsets captionMargin,
-    EdgeInsets captionPadding,
-  ) {
+      Map<String, dynamic> toPass,
+      imageStoryDuration,
+      ) {
     Map<String, dynamic> temp = {
       'storyId': toPass['pressedStoryId'],
       'file': toPass['snapshotData']['file'],
       'title': toPass['snapshotData']['title'],
       'previewImage': toPass['snapshotData']['previewImage'],
+      's_caption' : toPass['snapshotData']['s_caption'],
     };
     Stories stories = Stories.fromJson(jsonDecode(jsonEncode(temp)));
+
     stories.file.asMap().forEach((index, storyInsideImage) {
       if (storyInsideImage.filetype != 'video') {
         CachedNetworkImageProvider(storyInsideImage.url[languageCode]);
@@ -71,24 +69,13 @@ class StoriesData {
           storyInsideImage.url[languageCode],
           controller: storyController,
           duration: Duration(seconds: imageStoryDuration),
-          caption: storyInsideImage.fileTitle != null
-              ? storyInsideImage.fileTitle[languageCode]
-              : null,
-          captionTextStyle: captionTextStyle,
-          captionMargin: captionMargin,
-          captionPadding: captionPadding,
         ));
       } else {
         storyItems.add(
           StoryItem.pageVideo(
             storyInsideImage.url[languageCode],
             controller: storyController,
-            caption: storyInsideImage.fileTitle != null
-                ? storyInsideImage.fileTitle[languageCode]
-                : null,
-            captionTextStyle: captionTextStyle,
-            captionPadding: captionPadding,
-            captionMargin: captionMargin,
+//            caption: stories.s_caption,
           ),
         );
       }

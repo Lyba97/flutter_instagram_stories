@@ -27,31 +27,25 @@ class GroupedStoriesView extends StatefulWidget {
   final Color closeButtonBackgroundColor;
   final Color backgroundColorBetweenStories;
   final bool sortingOrderDesc;
-  final TextStyle captionTextStyle;
-  final EdgeInsets captionMargin;
-  final EdgeInsets captionPadding;
 
   GroupedStoriesView(
       {this.collectionDbName,
-      this.languageCode,
-      this.imageStoryDuration,
-      this.progressPosition,
-      this.repeat,
-      this.inline,
-      this.backgroundColorBetweenStories,
-      this.closeButtonIcon,
-      this.closeButtonBackgroundColor,
-      this.sortingOrderDesc,
-      this.captionTextStyle,
-      this.captionMargin,
-      this.captionPadding});
+        this.languageCode,
+        this.imageStoryDuration = 3,
+        this.progressPosition,
+        this.repeat,
+        this.inline,
+        this.backgroundColorBetweenStories,
+        this.closeButtonIcon,
+        this.closeButtonBackgroundColor,
+        this.sortingOrderDesc});
 
   @override
   _GroupedStoriesViewState createState() => _GroupedStoriesViewState();
 }
 
 class _GroupedStoriesViewState extends State<GroupedStoriesView> {
-  final _firestore = FirebaseFirestore.instance;
+  final _firestore = Firestore.instance;
   final storyController = StoryController();
   List<List<StoryItem>> storyItemList = [];
   StoriesData _storiesData;
@@ -64,9 +58,7 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
 
   @override
   void initState() {
-    _storiesData = StoriesData(
-      languageCode: widget.languageCode,
-    );
+    _storiesData = StoriesData(languageCode: widget.languageCode);
     super.initState();
   }
 
@@ -97,30 +89,24 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
                   ),
                 );
               }
+
               Map<String, dynamic> toPass = {
                 'snapshotData': snapshot.data,
-                'pressedStoryId': storiesListWithPressed.pressedStoryId,
-                'captionTextStyle': widget.captionTextStyle,
+                'pressedStoryId': storiesListWithPressed.pressedStoryId
               };
-              _storiesData.parseStories(
-                toPass,
-                widget.imageStoryDuration,
-                widget.captionTextStyle,
-                widget.captionMargin,
-                widget.captionPadding,
-              );
+              _storiesData.parseStories(toPass, widget.imageStoryDuration);
               storyItemList.add(_storiesData.storyItems);
 
               return Dismissible(
                   background:
-                      Container(color: widget.backgroundColorBetweenStories),
+                  Container(color: widget.backgroundColorBetweenStories),
                   crossAxisEndOffset: 0.0,
                   resizeDuration: Duration(milliseconds: 200),
                   key: UniqueKey(),
                   onDismissed: (DismissDirection direction) {
                     if (direction == DismissDirection.endToStart) {
                       String nextStoryId =
-                          storiesListWithPressed.nextElementStoryId();
+                      storiesListWithPressed.nextElementStoryId();
                       if (nextStoryId == null) {
                         _navigateBack();
                       } else {
@@ -132,14 +118,14 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
                               arguments: StoriesListWithPressed(
                                   pressedStoryId: nextStoryId,
                                   storiesIdsList:
-                                      storiesListWithPressed.storiesIdsList),
+                                  storiesListWithPressed.storiesIdsList),
                             ),
                           ),
                         );
                       }
                     } else {
                       String previousStoryId =
-                          storiesListWithPressed.previousElementStoryId();
+                      storiesListWithPressed.previousElementStoryId();
                       if (previousStoryId == null) {
                         _navigateBack();
                       } else {
@@ -151,7 +137,7 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
                               arguments: StoriesListWithPressed(
                                   pressedStoryId: previousStoryId,
                                   storiesIdsList:
-                                      storiesListWithPressed.storiesIdsList),
+                                  storiesListWithPressed.storiesIdsList),
                             ),
                           ),
                         );
@@ -173,7 +159,7 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
                       goForward: () {},
                       onComplete: () {
                         String nextStoryId =
-                            storiesListWithPressed.nextElementStoryId();
+                        storiesListWithPressed.nextElementStoryId();
                         if (nextStoryId == null) {
                           _navigateBack();
                         } else {
@@ -185,7 +171,7 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
                                 arguments: StoriesListWithPressed(
                                   pressedStoryId: nextStoryId,
                                   storiesIdsList:
-                                      storiesListWithPressed.storiesIdsList,
+                                  storiesListWithPressed.storiesIdsList,
                                 ),
                               ),
                             ),
@@ -208,6 +194,7 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
             padding: const EdgeInsets.all(0.0),
             child: FloatingActionButton(
               onPressed: () {
+                //Navigator.pop(context);
                 _navigateBack();
               },
               child: widget.closeButtonIcon,
@@ -225,9 +212,6 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
       collectionDbName: widget.collectionDbName,
       languageCode: widget.languageCode,
       imageStoryDuration: widget.imageStoryDuration,
-      captionTextStyle: widget.captionTextStyle,
-      captionMargin: widget.captionMargin,
-      captionPadding: widget.captionPadding,
       progressPosition: widget.progressPosition,
       repeat: widget.repeat,
       inline: widget.inline,
@@ -239,12 +223,18 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
   }
 
   _navigateBack() {
-    return Navigator.pushNamedAndRemoveUntil(
-      context,
-      '/',
-      (_) => false,
-      arguments: 'back_from_stories_view',
-    );
+    print('navigating back');
+    int count = 0;
+    Navigator.popUntil(context, (route) {
+      return count++ == 1;
+
+    });
+//    return Navigator.pushNamedAndRemoveUntil(
+//      context,
+//      '/menu',
+//      (_) => false,
+//      arguments: 'back_from_stories_view',
+//    );
   }
 
   void _onStoryShow(StoryItem s) {}
@@ -257,10 +247,10 @@ class NoAnimationMaterialPageRoute<T> extends MaterialPageRoute<T> {
     bool maintainState = true,
     bool fullscreenDialog = false,
   }) : super(
-            builder: builder,
-            maintainState: maintainState,
-            settings: settings,
-            fullscreenDialog: fullscreenDialog);
+      builder: builder,
+      maintainState: maintainState,
+      settings: settings,
+      fullscreenDialog: fullscreenDialog);
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
