@@ -5,9 +5,6 @@ import 'style.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
- // WidgetsFlutterBinding.ensureInitialized();
- // await Firebase.initializeApp();
-
   runApp(MyApp());
 }
 
@@ -126,7 +123,7 @@ class _HomeState extends State<Home> {
   _backFromStoriesAlert() {
     showDialog(
       context: context,
-      child: SimpleDialog(
+      builder: (context){return SimpleDialog(
         title: Text(
           "User have looked stories and closed them.",
           style: TextStyle(fontWeight: FontWeight.normal, fontSize: 18.0),
@@ -139,7 +136,7 @@ class _HomeState extends State<Home> {
             },
           ),
         ],
-      ),
+      );}
     );
   }
 }
