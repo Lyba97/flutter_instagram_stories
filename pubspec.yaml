@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_cache_manager: ^1.4.1
+  flutter_cache_manager: ^2.1.1
   rxdart: ^0.24.1
   video_player: ^0.10.11+1
   cached_network_image: ^2.2.0+1
