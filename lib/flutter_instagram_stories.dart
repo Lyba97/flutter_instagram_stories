@@ -83,7 +83,7 @@ class FlutterInstagramStories extends StatefulWidget {
 
 class _FlutterInstagramStoriesState extends State<FlutterInstagramStories> {
   StoriesData _storiesData;
-  final _firestore = Firestore.instance;
+  final _firestore = FirebaseFirestore.instance;
   bool _backStateAdditional = false;
 
   @override

@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
 
   //TODO: add possibility get data from any API
   CollectionReference dbInstance =
-      Firestore.instance.collection(collectionDbName);
+      FirebaseFirestore.instance.collection(collectionDbName);
 
   @override
   void initState() {

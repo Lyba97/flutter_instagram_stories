@@ -45,7 +45,7 @@ class GroupedStoriesView extends StatefulWidget {
 }
 
 class _GroupedStoriesViewState extends State<GroupedStoriesView> {
-  final _firestore = Firestore.instance;
+  final _firestore = FirebaseFirestore.instance;
   final storyController = StoryController();
   List<List<StoryItem>> storyItemList = [];
   StoriesData _storiesData;
@@ -79,7 +79,7 @@ class _GroupedStoriesViewState extends State<GroupedStoriesView> {
           child: StreamBuilder(
             stream: _firestore
                 .collection(widget.collectionDbName)
-                .document(storiesListWithPressed.pressedStoryId)
+                .doc(storiesListWithPressed.pressedStoryId)
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
