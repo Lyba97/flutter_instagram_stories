@@ -22,19 +22,19 @@ class StoriesData {
     List<Stories> storyWidgets = [];
     for (var story in stories) {
       final Stories storyData = Stories.fromJson({
-        'storyId': story.documentID,
-        'date': DateTime.fromMillisecondsSinceEpoch(story.data['date'].seconds)
+        'storyId': story.id,
+        'date': DateTime.fromMillisecondsSinceEpoch(story.data()['date'].seconds)
             .toIso8601String(),
-        'file': jsonDecode(jsonEncode(story.data['file'])),
-        'previewImage': story.data['previewImage'],
-        'previewTitle': jsonDecode(jsonEncode(story.data['previewTitle'])),
-        's_caption' : jsonDecode(jsonEncode(story.data['s_caption'])),
+        'file': jsonDecode(jsonEncode(story.data()['file'])),
+        'previewImage': story.data()['previewImage'],
+        'previewTitle': jsonDecode(jsonEncode(story.data()['previewTitle'])),
+        's_caption' : jsonDecode(jsonEncode(story.data()['s_caption'])),
 
       });
       if (storyData.file != null) {
         storyWidgets.add(storyData);
         //  storyData.s_caption
-        _storiesIdsList.add(story.documentID);
+        _storiesIdsList.add(story.id);
 
 //         preliminary caching
         var i = 0;
